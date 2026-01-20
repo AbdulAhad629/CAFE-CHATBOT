@@ -1,0 +1,101 @@
+WHATSAPP CAFETERIA CHATBOT - PROJECT STRUCTURE
+==============================================
+
+whatsapp-cafeteria-bot/
+│
+├── 📄 run.py                          # Main application entry point
+├── 📄 requirements.txt                # Python dependencies
+├── 📄 README.md                       # Project documentation
+├── 📄 .env.example                    # Environment variables template
+├── 📄 .gitignore                      # Git ignore rules
+│
+├── 📁 app/                            # Main application package
+│   ├── 📄 __init__.py                 # Flask app factory
+│   │
+│   ├── 📁 routes/                     # API route blueprints
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 whatsapp_routes.py      # WhatsApp webhook endpoints
+│   │   ├── 📄 menu_routes.py          # Menu management API
+│   │   ├── 📄 order_routes.py         # Order handling API
+│   │   ├── 📄 payment_routes.py       # Payment processing API
+│   │   └── 📄 staff_routes.py         # Staff dashboard API
+│   │
+│   ├── 📁 services/                   # Business logic layer
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 whatsapp_service.py     # WhatsApp API integration
+│   │
+│   ├── 📁 models/                     # Data models (to be created)
+│   │   └── 📄 __init__.py
+│   │
+│   ├── 📁 utils/                      # Utility functions
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 supabase_client.py      # Database connection
+│   │
+│   ├── 📁 static/                     # Static files
+│   │   ├── 📁 css/
+│   │   ├── 📁 js/
+│   │   └── 📁 images/
+│   │
+│   └── 📁 templates/                  # HTML templates
+│       └── 📁 staff/
+│           └── 📄 dashboard.html      # Staff dashboard UI
+│
+├── 📁 config/                         # Configuration files
+│   ├── 📄 __init__.py
+│   └── 📄 config.py                   # App configuration
+│
+└── 📁 tests/                          # Test files
+    └── (to be created)
+
+
+KEY FILES DESCRIPTION:
+=====================
+
+📌 ENTRY POINT:
+   run.py - Starts the Flask application
+
+📌 CONFIGURATION:
+   .env.example - Template for environment variables
+   config/config.py - Application settings
+
+📌 CORE APPLICATION:
+   app/__init__.py - Initializes Flask app and registers blueprints
+
+📌 API ROUTES:
+   whatsapp_routes.py - Handles incoming WhatsApp messages
+   menu_routes.py - Menu CRUD operations
+   order_routes.py - Order management
+   payment_routes.py - Payment processing
+   staff_routes.py - Staff dashboard endpoints
+
+📌 SERVICES:
+   whatsapp_service.py - WhatsApp Cloud API integration
+   
+📌 UTILITIES:
+   supabase_client.py - Supabase database connection
+
+📌 FRONTEND:
+   templates/staff/dashboard.html - Staff order management UI
+
+
+SETUP CHECKLIST:
+===============
+1. ✅ Create virtual environment: python -m venv venv
+2. ✅ Activate virtual environment
+3. ✅ Install dependencies: pip install -r requirements.txt
+4. ⬜ Copy .env.example to .env
+5. ⬜ Fill in environment variables in .env
+6. ⬜ Set up Supabase database tables
+7. ⬜ Configure WhatsApp Cloud API
+8. ⬜ Run application: python run.py
+
+
+NEXT DEVELOPMENT STEPS:
+======================
+1. Implement chatbot message handler
+2. Create order processing logic
+3. Integrate payment gateway
+4. Add WhatsApp notifications
+5. Build admin menu management
+6. Add authentication
+7. Write tests

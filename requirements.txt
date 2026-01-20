@@ -1,0 +1,38 @@
+# Flask Core
+Flask==3.0.0
+Flask-CORS==4.0.0
+
+# Supabase - Updated for compatibility
+supabase==2.9.0
+gotrue==2.9.1
+postgrest==0.17.1
+httpx==0.27.0
+
+# WhatsApp Cloud API
+requests==2.31.0
+python-dotenv==1.0.0
+
+# Payment Gateway (adjust based on your provider)
+stripe==7.10.0
+
+# Data Validation
+pydantic==2.5.3
+
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Webhooks & Security
+itsdangerous==2.1.2
+Werkzeug==3.0.1
+
+# Development & Testing
+pytest==7.4.3
+pytest-flask==1.3.0
+python-decouple==3.8
+
+# Production Server
+gunicorn==21.2.0
+
+# Logging & Monitoring
+python-json-logger==2.0.7
