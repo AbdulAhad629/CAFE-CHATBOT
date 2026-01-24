@@ -22,8 +22,10 @@ def get_pending_orders():
     """
     try:
         response = supabase_client.table('orders').select(
-            '*, students(name, whatsapp_number), order_items(*, menu_items(name, price))'
-        ).in_('status', ['pending', 'confirmed', 'preparing']).order('created_at').execute()
+            '*, students(id, name, whatsapp_number), order_items(*, menu_items(id, name, price, category))'
+        ).in_('status', ['pending', 'confirmed', 'preparing']).order('created_at', desc=True).execute()
+        
+        print(f"[DEBUG] Pending orders fetched: {len(response.data)} orders")
         
         return jsonify({
             'status': 'success',
@@ -31,6 +33,37 @@ def get_pending_orders():
         }), 200
         
     except Exception as e:
+        print(f"[ERROR] Error fetching pending orders: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
+
+
+@staff_bp.route('/orders/all', methods=['GET'])
+def get_all_orders():
+    """
+    Get ALL orders (for debugging and full view)
+    """
+    try:
+        response = supabase_client.table('orders').select(
+            '*, students(id, name, whatsapp_number), order_items(*, menu_items(id, name, price, category))'
+        ).order('created_at', desc=True).limit(100).execute()
+        
+        print(f"[DEBUG] All orders fetched: {len(response.data)} orders")
+        
+        return jsonify({
+            'status': 'success',
+            'count': len(response.data),
+            'data': response.data
+        }), 200
+        
+    except Exception as e:
+        print(f"[ERROR] Error fetching all orders: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'status': 'error',
             'message': str(e)

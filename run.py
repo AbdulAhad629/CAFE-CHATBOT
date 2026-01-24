@@ -2,6 +2,8 @@
 Main entry point for the WhatsApp Cafeteria Chatbot
 Run this file to start the Flask application
 """
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 from app import create_app
 import os
 

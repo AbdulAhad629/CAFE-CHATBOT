@@ -36,3 +36,7 @@ gunicorn==21.2.0
 
 # Logging & Monitoring
 python-json-logger==2.0.7
+
+torch==2.0.0
+sentencepiece==0.1.99
+groq==0.4.1

@@ -21,15 +21,15 @@ class TwilioWhatsAppService:
         
         # Check if credentials are provided
         if not self.account_sid or not self.auth_token:
-            print("⚠️ WARNING: Twilio credentials not configured!")
+            print("[WARN] WARNING: Twilio credentials not configured!")
             print("Set TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN in .env")
             self.client = None
         else:
             try:
                 self.client = Client(self.account_sid, self.auth_token)
-                print("✅ Twilio WhatsApp Service initialized")
+                print("[OK] Twilio WhatsApp Service initialized")
             except Exception as e:
-                print(f"❌ Error initializing Twilio client: {str(e)}")
+                print(f"[ERROR] Error initializing Twilio client: {str(e)}")
                 self.client = None
     
     
@@ -51,7 +51,7 @@ class TwilioWhatsAppService:
             
             # If no client (test mode), just log
             if not self.client:
-                print(f"📤 [TEST MODE] Would send to {to}:")
+                print(f"[TEST] Would send to {to}:")
                 print(f"   {message[:100]}...")
                 return {
                     'success': True,
@@ -66,7 +66,7 @@ class TwilioWhatsAppService:
                 to=to
             )
             
-            print(f"✅ Message sent to {to} (SID: {twilio_message.sid})")
+            print(f"[OK] Message sent to {to} (SID: {twilio_message.sid})")
             
             return {
                 'success': True,
@@ -76,14 +76,14 @@ class TwilioWhatsAppService:
             }
             
         except TwilioRestException as e:
-            print(f"❌ Twilio error sending to {to}: {str(e)}")
+            print(f"[ERROR] Twilio error sending to {to}: {str(e)}")
             return {
                 'success': False,
                 'error': str(e),
                 'error_code': e.code
             }
         except Exception as e:
-            print(f"❌ Error sending message to {to}: {str(e)}")
+            print(f"[ERROR] Error sending message to {to}: {str(e)}")
             return {
                 'success': False,
                 'error': str(e)

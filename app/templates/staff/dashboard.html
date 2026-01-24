@@ -196,8 +196,12 @@
                 const data = await response.json();
                 
                 if (data.status === 'success') {
-                    displayOrders(data.data);
-                    updateStats(data.data);
+                    const orders = data.data || [];
+                    console.log('Loaded orders:', orders.length);
+                    
+                    displayOrders(orders);
+                    updatePendingCount(orders);
+                    calculateTodayStats();
                 }
             } catch (error) {
                 console.error('Error loading orders:', error);
@@ -206,28 +210,57 @@
             }
         }
         
+        function updatePendingCount(orders) {
+            // Count only active orders (pending, confirmed, preparing)
+            const pendingCount = orders.filter(order => 
+                ['pending', 'confirmed', 'preparing'].includes(order.status)
+            ).length;
+            
+            console.log('Pending count:', pendingCount);
+            document.getElementById('pending-count').textContent = pendingCount;
+        }
+        
         function displayOrders(orders) {
             const container = document.getElementById('orders-container');
             
-            if (orders.length === 0) {
+            if (!orders || orders.length === 0) {
                 container.innerHTML = '<p class="loading">No active orders</p>';
                 return;
             }
             
-            container.innerHTML = orders.map(order => `
+            console.log('Displaying', orders.length, 'orders');
+            
+            container.innerHTML = orders.map(order => {
+                // Handle nested student data
+                const student = Array.isArray(order.students) ? order.students[0] : order.students;
+                const studentName = student?.name || 'Unknown';
+                const whatsapp = student?.whatsapp_number || 'N/A';
+                
+                // Handle order items
+                const itemsText = (Array.isArray(order.order_items) ? order.order_items : []).map(item => {
+                    const menuItem = item.menu_items;
+                    const itemName = menuItem?.name || 'Unknown item';
+                    return `${item.quantity}x ${itemName}`;
+                }).join(', ');
+                
+                return `
                 <div class="order-card">
                     <div class="order-header">
                         <span class="order-id">Order #${order.id}</span>
                         <span class="order-status status-${order.status}">${order.status.toUpperCase()}</span>
                     </div>
-                    <div class="order-items">
-                        ${order.order_items.map(item => 
-                            `${item.quantity}x ${item.menu_items.name}`
-                        ).join(', ')}
+                    <div style="margin: 10px 0; color: #666; font-size: 14px;">
+                        <strong>Customer:</strong> ${studentName}<br>
+                        <strong>WhatsApp:</strong> ${whatsapp}
                     </div>
-                    <div class="order-total">Total: PKR ${order.total}</div>
+                    <div class="order-items" style="margin: 10px 0;">
+                        <strong>Items:</strong> ${itemsText || 'No items'}
+                    </div>
+                    <div class="order-total" style="margin: 10px 0; font-weight: bold;">Total: PKR ${order.total}</div>
                     <div class="action-buttons">
                         ${order.status === 'pending' ? 
+                            `<button class="btn btn-primary" onclick="updateStatus(${order.id}, 'confirmed')">Confirm Order</button>` : ''}
+                        ${order.status === 'confirmed' ? 
                             `<button class="btn btn-primary" onclick="updateStatus(${order.id}, 'preparing')">Start Preparing</button>` : ''}
                         ${order.status === 'preparing' ? 
                             `<button class="btn btn-primary" onclick="updateStatus(${order.id}, 'ready')">Mark as Ready</button>` : ''}
@@ -235,16 +268,58 @@
                             `<button class="btn btn-primary" onclick="updateStatus(${order.id}, 'completed')">Complete Order</button>` : ''}
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
-        function updateStats(orders) {
-            document.getElementById('pending-count').textContent = orders.length;
-            // TODO: Add logic for today's orders and revenue
+        async function calculateTodayStats() {
+            try {
+                // Fetch all orders to calculate today's stats
+                const response = await fetch('/staff/orders/all');
+                const data = response.json ? await response.json() : { data: [] };
+                const allOrders = data.data || [];
+                
+                console.log('Calculating stats from', allOrders.length, 'total orders');
+                
+                // Get today's date (start of day)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // Filter orders from today
+                let todayOrders = 0;
+                let todayRevenue = 0;
+                
+                allOrders.forEach(order => {
+                    if (!order.created_at) return;
+                    
+                    const orderDate = new Date(order.created_at);
+                    orderDate.setHours(0, 0, 0, 0);
+                    
+                    if (orderDate.getTime() === today.getTime()) {
+                        // Count all orders from today
+                        todayOrders++;
+                        
+                        // Add revenue from all orders (not just completed)
+                        todayRevenue += (order.total || 0);
+                    }
+                });
+                
+                console.log('Today stats - Orders:', todayOrders, 'Revenue:', todayRevenue);
+                
+                // Update UI
+                document.getElementById('today-count').textContent = todayOrders;
+                document.getElementById('today-revenue').textContent = `PKR ${todayRevenue.toLocaleString()}`;
+                
+            } catch (error) {
+                console.error('Error calculating today stats:', error);
+                document.getElementById('today-count').textContent = 'Error';
+                document.getElementById('today-revenue').textContent = 'PKR 0';
+            }
         }
         
         async function updateStatus(orderId, newStatus) {
             try {
+                console.log('Updating order', orderId, 'to status:', newStatus);
+                
                 const response = await fetch(`/api/orders/${orderId}/status`, {
                     method: 'PATCH',
                     headers: {
@@ -253,23 +328,39 @@
                     body: JSON.stringify({ status: newStatus })
                 });
                 
+                const data = await response.json();
+                
                 if (response.ok) {
+                    console.log('Order updated successfully');
                     // Reload orders after update
                     loadOrders();
-                    
-                    // TODO: Send WhatsApp notification to student
+                    alert('Order status updated successfully!');
+                } else {
+                    console.error('Error response:', data);
+                    alert('Failed to update order: ' + (data.message || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Error updating order status:', error);
-                alert('Failed to update order status');
+                alert('Failed to update order status: ' + error.message);
             }
         }
         
         // Load orders on page load
+        console.log('Dashboard loaded, loading orders...');
         loadOrders();
+        calculateTodayStats();
         
         // Refresh orders every 10 seconds
-        setInterval(loadOrders, 10000);
+        setInterval(() => {
+            console.log('Auto-refreshing orders...');
+            loadOrders();
+        }, 10000);
+        
+        // Refresh today's stats every 30 seconds
+        setInterval(() => {
+            console.log('Auto-refreshing stats...');
+            calculateTodayStats();
+        }, 30000);
     </script>
 </body>
 </html>
