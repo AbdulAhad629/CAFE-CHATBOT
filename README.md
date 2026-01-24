@@ -683,8 +683,7 @@ See `requirements.txt` for complete list with versions.
 
 **Developer:** Muhammad Naeem  
 **Institution:** FAST NUCES  
-**Email:** [Your Email]  
-**GitHub:** [Your GitHub Profile]  
+**Email:** [naeemubeen639@gmail.com]  
 
 ## 📄 License
 
