@@ -244,9 +244,8 @@ pytest tests/
 
 ## 👥 Team
 
-- Merub Nadeem (2022-BS-CS-137) - Chatbot development & Frontend
-- Tehreem Rashid (2022-BS-CS-219) - Documentation & Testing
-- Mahnoor (2022-BS-CS-228) - Database & Backend
+- Muhammad Naeem - Chatbot development 
+
 
 **Supervisor:** Ma'am Saima Kanwal
 
