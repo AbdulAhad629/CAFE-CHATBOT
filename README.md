@@ -2,7 +2,7 @@
 
 An intelligent automated food ordering system for university cafeterias with real-time WhatsApp integration, AI chatbot conversation, and secure payment processing.
 
-**Developer:** Muhammad Naeem | FAST NUCES
+**Developer:** Abdul Ahad | IUB
 
 ---
 
